@@ -5,9 +5,6 @@ type Props = {
 };
 
 function ProductFeed({ products }: Props) {
-  products.map((product: any) => {
-    <p>hello</p>;
-  });
   return (
     <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:-mt-52 mx-auto">
       {products

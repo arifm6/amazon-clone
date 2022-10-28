@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
+import { useDispatch } from "react-redux";
+import { addToCart, selectItems } from "../slices/cartSlice";
 type Props = {
   title: string;
   price: number;
@@ -19,6 +21,22 @@ function Product({ id, title, price, description, category, image }: Props) {
     setRating(Math.floor(Math.random() * 5) + 1);
     setHasPrime(Math.random() < 0.5);
   }, []);
+  const dispatch = useDispatch();
+  const addItemToCart = () => {
+    const product = {
+      id: id,
+      title: title,
+      price: price,
+      description: description,
+      category: category,
+      image: image,
+      rating: rating,
+      hasPrime: hasPrime,
+    };
+
+    dispatch(addToCart(product));
+  };
+
   return (
     <div className="relative flex flex-col items-center m-5 bg-white z-30 p-10">
       <p className="absolute top-2 right-2 text-xs text-gray-400 italic">
@@ -36,7 +54,7 @@ function Product({ id, title, price, description, category, image }: Props) {
       <h4 className="my-4">{title}</h4>
       <div className="flex">
         {Array(rating)
-          .fill(Math.random())
+          .fill("_")
           .map((_, i) => {
             return <FaStar key={i} className="w-5 h-5 text-yellow-500" />;
           })}
@@ -51,7 +69,9 @@ function Product({ id, title, price, description, category, image }: Props) {
           <p className="text-xs text-gray-500">Free Next-day Delivery</p>
         </div>
       )}
-      <button className="mt-auto button">Add To Cart</button>
+      <button onClick={() => addItemToCart()} className="mt-auto button">
+        Add To Cart
+      </button>
     </div>
   );
 }

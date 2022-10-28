@@ -4,10 +4,15 @@ import AmazonLogo from "../public/amazon_logo.png";
 import { FaSearch } from "react-icons/fa";
 import { AiOutlineShoppingCart, AiOutlineMenu } from "react-icons/ai";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { selectItems } from "../slices/cartSlice";
 type Props = {};
 
 function Header({}: Props) {
   const { data: session } = useSession();
+  const router = useRouter();
+  const items = useSelector(selectItems);
 
   return (
     <header>
@@ -20,6 +25,7 @@ function Header({}: Props) {
             width={150}
             height={40}
             className="object-contain cursor-pointer pl-4"
+            onClick={() => router.push("/")}
           />
         </div>
         {/**Search  */}
@@ -45,14 +51,16 @@ function Header({}: Props) {
             <p>Returns</p>
             <p className="font-extrabold md:text-sm"> & orders</p>
           </div>
-          <div className="relative link flex items-center">
-            <span className="absolute top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">
-              {" "}
-              0
+          <div
+            className="relative link flex items-center"
+            onClick={() => router.push("/checkout")}
+          >
+            <span className="absolute top-0 right-2 md:right-10 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">
+              {items.length}
             </span>
             <AiOutlineShoppingCart className="h-10 w-10 " />
             <p className="hidden md:inline font-extrabold md:text-sm mt-2 ">
-              Basket
+              Cart
             </p>
           </div>
         </div>
