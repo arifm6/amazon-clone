@@ -3,6 +3,7 @@ import Image from "next/image";
 import AmazonLogo from "../public/amazon_logo.png";
 import { FaSearch } from "react-icons/fa";
 import { AiOutlineShoppingCart, AiOutlineMenu } from "react-icons/ai";
+import { signIn, signOut, useSession } from "next-auth/react";
 type Props = {};
 
 function Header({}: Props) {
@@ -29,7 +30,12 @@ function Header({}: Props) {
         </div>
         {/**Right */}
         <div className="text-white flex items-center text-xs space-x-6 mx-6 whitespace-nowrap">
-          <div className="link">
+          <div
+            onClick={() => {
+              signIn();
+            }}
+            className="link"
+          >
             <p>Hello ahmad</p>
             <p className="font-extrabold md:text-sm">Accounts & Lists</p>
           </div>
