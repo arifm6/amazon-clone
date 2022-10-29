@@ -1,5 +1,6 @@
 import { buffer } from "micro";
 import * as admin from "firebase-admin";
+const { getFirestore } = require("firebase-admin/firestore");
 
 //secure connection to firebase from our backend.
 const serviceAccount = require("../../permissions.json");
@@ -9,6 +10,7 @@ const app = !admin.apps.length
       credential: admin.credential.cert(serviceAccount),
     })
   : admin.app();
+const db = getFirestore();
 
 //establish connection to stripe
 
@@ -18,15 +20,11 @@ const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
 const fulfillOrder = async (session) => {
   //console.log("fulfilling order", session);
-  console.log("fullfilling order");
-  /*
-  return collection(
-    app.firestore(),
-    "users",
-    session.metadata.email,
-    "orders",
-    session.id
-  )
+  return db
+    .collection("users")
+    .doc(session.metadata.email)
+    .collection("orders")
+    .doc(session.id)
     .set({
       amount: session.amount_total / 100,
       amount_shipping: session.total_details.amount_shipping / 100,
@@ -35,14 +33,19 @@ const fulfillOrder = async (session) => {
     })
     .then(() =>
       console.log(`SUCCESS: Order ${session.id} has been added to the database`)
-    );*/
-  /* reference:
+    );
+  /*
+  return 
+   reference:
   
-  app.firestore
-    .collection("users")
-    .doc(session.metadata.email)
-    .collection("orders")
-    .doc(session.id)
+
+    collection(
+    app.firestore(),
+    "users",
+    session.metadata.email,
+    "orders",
+    session.id
+  )
     .set({
       amount: session.amount_total / 100,
       amount_shipping: session.total_details.amount_shipping / 100,
