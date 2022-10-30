@@ -7,6 +7,7 @@ import {
   doc,
   getDocs,
   QuerySnapshot,
+  query,
 } from "firebase/firestore";
 import moment from "moment";
 import Order from "../components/Order";
@@ -61,7 +62,10 @@ export async function getServerSideProps(context: any) {
   }
   // firebase db
   const stripeOrders = await getDocs(
-    collection(db, "users", session?.user?.email as string, "orders")
+    query(
+      collection(db, "users", session?.user?.email as string, "orders"),
+      orderBy("timestamp", "desc")
+    )
   );
   //stripe orders
   const orders = await Promise.all(
