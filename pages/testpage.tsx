@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import db from "../firebase";
 import { json } from "micro";
@@ -26,24 +27,8 @@ export async function getServerSideProps(context: any) {
       props: {},
     };
   }
-  const databaseCart = await getDocs(
-    query(
-      collection(db, "users", "arifmassih6@gmail.com", "cart"),
-      orderBy("timestamp", "desc")
-    )
-  );
-  const cart = await Promise.all(
-    databaseCart.docs.map(async (cartItem) => ({
-      id: cartItem.id,
-      title: cartItem.data().title,
-      price: cartItem.data().price,
-      description: cartItem.data().description,
-      category: cartItem.data().category,
-      image: cartItem.data().image,
-    }))
-  );
 
-  return { props: { cart } };
+  return { props: {} };
 }
 
 export default testpage;

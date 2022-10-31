@@ -1,1 +1,1 @@
-Things to add: change images and possibly apis. possibly persist cart on refresh. random star on cart page?
+Things to add: change images and possibly apis. possibly persist cart on refresh. random star on cart page? fix the remote/additem to cart on checkout page so that it is a quantity selection (datalist). Also make removing it immediately delete the entry. fix count logic? Need to find a way to delete items on checkout. currently, nested axios post in create-checkout-session is not cutting it.

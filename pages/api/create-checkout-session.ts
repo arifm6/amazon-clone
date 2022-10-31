@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export default async (req: any, res: any) => {
@@ -33,6 +35,23 @@ export default async (req: any, res: any) => {
       email,
       images: JSON.stringify(items.map((item: { image: any }) => item.image)),
     },
+  });
+  items.forEach((item: any) => {
+    const removeItemFromCart = async () => {
+      //now call backend to create checkout session
+      const removeFromCartSession = await axios.post(
+        "/api/remove-item-from-cart",
+        {
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          description: item.description,
+          category: item.category,
+          image: item.image,
+          email: session?.user?.email,
+        }
+      );
+    };
   });
   res.status(200).json({ id: session.id });
 };

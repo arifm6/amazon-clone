@@ -3,6 +3,10 @@ import React from "react";
 import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
+import { useSession } from "next-auth/react";
+import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
+import db from "../firebase";
+import axios from "axios";
 type Props = any;
 
 export default function CheckoutProduct({
@@ -15,20 +19,38 @@ export default function CheckoutProduct({
   image,
   hasPrime,
 }: Props) {
-  const addItemToCart = () => {
-    const product = {
+  const { data: session } = useSession();
+  // call backend to add item to cart
+
+  const addItemToCart = async () => {
+    //now call backend to create checkout session
+    const addToCart = await axios.post("/api/add-item-to-cart", {
       id: id,
       title: title,
       price: price,
       description: description,
       category: category,
       image: image,
-      rating: rating,
-      hasPrime: hasPrime,
-    };
+      count: "add logic here",
+      email: session?.user?.email,
+    });
   };
-  const removeItemFromCart = () => {
-    //dispatch(removeFromCart(id));
+
+  const removeItemFromCart = async () => {
+    //now call backend to create checkout session
+    const removeFromCartSession = await axios.post(
+      "/api/remove-item-from-cart",
+      {
+        id: id,
+        title: title,
+        price: price,
+        description: description,
+        category: category,
+        image: image,
+        count: "add logic here",
+        email: session?.user?.email,
+      }
+    );
   };
   return (
     <div className="grid grid-cols-5">
@@ -71,12 +93,7 @@ export default function CheckoutProduct({
         >
           Add To Cart
         </button>
-        <button
-          className="button"
-          onClick={() => {
-            removeItemFromCart();
-          }}
-        >
+        <button className="button" onClick={removeItemFromCart}>
           Remove From Cart
         </button>
       </div>

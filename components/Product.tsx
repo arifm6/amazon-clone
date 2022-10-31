@@ -8,6 +8,8 @@ import { CartContext } from "../pages/_app";
 import { collection, doc, setDoc } from "firebase/firestore";
 import db from "../firebase";
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import { json } from "micro";
 type Props = {
   title: string;
   price: number;
@@ -27,26 +29,24 @@ function Product({ id, title, price, description, category, image }: Props) {
     setRating(Math.floor(Math.random() * 5) + 1);
     setHasPrime(Math.random() < 0.5);
   }, []);
+
   const addItemToCart = async () => {
     if (!session) {
       alert("Please Log In To Add An Item To Your Cart");
       return;
     }
-    const cartRef = collection(
-      db,
-      "users",
-      session?.user?.email as string,
-      "cart"
-    );
-    setDoc(doc(cartRef, `item: ${id}`), {
+    const addToCartSession = await axios.post("/api/add-item-to-cart", {
+      id: id,
       title: title,
       price: price,
       description: description,
       category: category,
       image: image,
       count: "add logic here",
+      email: session?.user?.email,
     });
   };
+
   return (
     <div className="relative flex flex-col items-center m-5 bg-white z-30 p-10">
       <p className="absolute top-2 right-2 text-xs text-gray-400 italic">
@@ -79,7 +79,7 @@ function Product({ id, title, price, description, category, image }: Props) {
           <p className="text-xs text-gray-500">Free Next-day Delivery</p>
         </div>
       )}
-      <button onClick={() => addItemToCart()} className="mt-auto button">
+      <button onClick={addItemToCart} className="mt-auto button">
         Add To Cart
       </button>
     </div>
