@@ -1,3 +1,4 @@
+import { getSession, useSession } from "next-auth/react";
 import React from "react";
 import Product from "./Product";
 type Props = {
@@ -5,6 +6,7 @@ type Props = {
 };
 
 function ProductFeed({ products }: Props) {
+  const session = useSession();
   return (
     <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:-mt-52 mx-auto">
       {products
@@ -25,7 +27,7 @@ function ProductFeed({ products }: Props) {
       <img
         src="/product_banner.jpg"
         alt="Product Banner"
-        className="md:col-span-full"
+        className="md:col-span-full "
       />
       <div className="md:col-span-2">
         {products

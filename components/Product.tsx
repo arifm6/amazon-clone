@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { useDispatch } from "react-redux";
 import { addToCart, selectItems } from "../slices/cartSlice";
+import { CartContext } from "../pages/_app";
+import { collection, doc, setDoc } from "firebase/firestore";
+import db from "../firebase";
+import { useSession } from "next-auth/react";
 type Props = {
   title: string;
   price: number;
@@ -17,26 +21,32 @@ function Product({ id, title, price, description, category, image }: Props) {
   //require setters and use effect because we are doing SSR. With SSR, math.random will generate different values for the server vs client.
   const [rating, setRating] = useState(3);
   const [hasPrime, setHasPrime] = useState(false);
+  const cart = useContext(CartContext);
+  const { data: session } = useSession();
   useEffect(() => {
     setRating(Math.floor(Math.random() * 5) + 1);
     setHasPrime(Math.random() < 0.5);
   }, []);
-  const dispatch = useDispatch();
-  const addItemToCart = () => {
-    const product = {
-      id: id,
+  const addItemToCart = async () => {
+    if (!session) {
+      alert("Please Log In To Add An Item To Your Cart");
+      return;
+    }
+    const cartRef = collection(
+      db,
+      "users",
+      session?.user?.email as string,
+      "cart"
+    );
+    setDoc(doc(cartRef, `item: ${id}`), {
       title: title,
       price: price,
       description: description,
       category: category,
       image: image,
-      rating: rating,
-      hasPrime: hasPrime,
-    };
-
-    dispatch(addToCart(product));
+      count: "add logic here",
+    });
   };
-
   return (
     <div className="relative flex flex-col items-center m-5 bg-white z-30 p-10">
       <p className="absolute top-2 right-2 text-xs text-gray-400 italic">
@@ -47,7 +57,7 @@ function Product({ id, title, price, description, category, image }: Props) {
         height={200}
         width={200}
         alt={description}
-        className="object-contain"
+        className="object-contain h-auto w-auto"
         placeholder="blur"
         blurDataURL={image}
       />
@@ -65,7 +75,7 @@ function Product({ id, title, price, description, category, image }: Props) {
       </div>
       {hasPrime && (
         <div className="flex items-center space-x-2 -mt-5">
-          <img className="w-12" src="/prime_img.png" alt="Prime Logo" />
+          <img className="w-12 h-auto" src="/prime_img.png" alt="Prime Logo" />
           <p className="text-xs text-gray-500">Free Next-day Delivery</p>
         </div>
       )}

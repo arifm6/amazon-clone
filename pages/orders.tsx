@@ -1,14 +1,7 @@
 import Header from "../components/Header";
 import { getSession, useSession } from "next-auth/react";
 import db from "../firebase";
-import {
-  collection,
-  orderBy,
-  doc,
-  getDocs,
-  QuerySnapshot,
-  query,
-} from "firebase/firestore";
+import { collection, orderBy, getDocs, query } from "firebase/firestore";
 import moment from "moment";
 import Order from "../components/Order";
 type Props = {
@@ -16,7 +9,6 @@ type Props = {
 };
 
 function Orders({ orders }: Props) {
-  console.log(orders);
   const { data: session, status } = useSession();
   return (
     <div>

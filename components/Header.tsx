@@ -12,7 +12,6 @@ type Props = {};
 function Header({}: Props) {
   const { data: session } = useSession();
   const router = useRouter();
-  const items = useSelector(selectItems);
 
   return (
     <header>
@@ -56,7 +55,7 @@ function Header({}: Props) {
             onClick={() => router.push("/checkout")}
           >
             <span className="absolute top-0 right-2 md:right-10 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">
-              {items.length}
+              29
             </span>
             <AiOutlineShoppingCart className="h-10 w-10 " />
             <p className="hidden md:inline font-extrabold md:text-sm mt-2 ">

@@ -1,19 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import Header from "../components/Header";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { selectItems, selectTotal } from "../slices/cartSlice";
 import CheckoutProduct from "../components/CheckoutProduct";
 import { useSession } from "next-auth/react";
 import Currency from "react-currency-formatter";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import moment from "moment";
+import { CartContext } from "./_app";
 const stripePromise = loadStripe(process.env.stripe_public_key as string);
 type Props = {};
 
 function Checkout({}: Props) {
-  const items = useSelector(selectItems);
-  const total = useSelector(selectTotal);
+  const cart: any = useContext(CartContext as any);
+  const getTotal = () => {
+    return cart
+      .map((cartItem: any) => cartItem.price)
+      .reduce((accumulator: any, value: any) => {
+        return accumulator + value;
+      }, 0);
+  };
   const { data: session } = useSession();
 
   const createCheckoutSession = async () => {
@@ -21,7 +27,7 @@ function Checkout({}: Props) {
 
     //now call backend to create checkout session
     const checkoutSession = await axios.post("/api/create-checkout-session", {
-      items: items,
+      items: cart,
       email: session?.user?.email,
     });
     //redirect user to stripe checkout
@@ -48,35 +54,46 @@ function Checkout({}: Props) {
           />
           <div className="flex flex-col p-5 space-y-10 bg-white">
             <h1 className="text-3xl border-b pb-4">
-              {items.length === 0
+              {cart && cart.length === 0
                 ? "Your Amazon Cart is Empty."
-                : "Your Shopping Basket"}
+                : "Your Shopping Cart"}
             </h1>
-            {items.map((item, i) => {
-              return (
-                <CheckoutProduct
-                  key={i}
-                  id={item.id}
-                  title={item.title}
-                  rating={item.rating}
-                  price={item.price}
-                  description={item.description}
-                  category={item.category}
-                  image={item.image}
-                  hasPrime={item.hasPrime}
-                />
-              );
-            })}
+            {cart &&
+              cart.map(
+                (
+                  cartItem: {
+                    id: any;
+                    title: any;
+                    price: any;
+                    description: any;
+                    category: any;
+                    image: any;
+                  },
+                  i: any
+                ) => {
+                  return (
+                    <CheckoutProduct
+                      key={i}
+                      id={cartItem.id}
+                      title={cartItem.title}
+                      price={cartItem.price}
+                      description={cartItem.description}
+                      category={cartItem.category}
+                      image={cartItem.image}
+                    />
+                  );
+                }
+              )}
           </div>
         </div>
         {/**right */}
         <div className="flex flex-col bg-white p-10 shadow-md">
-          {items.length > 0 && (
+          {cart && cart.length > 0 && (
             <>
               <h2 className="whitespace-nowrap">
-                Subtotal ({items.length} item{items.length > 1 && "s"})
+                Subtotal ({cart.length} item{cart.length > 1 && "s"})
                 <span className="font-bold">
-                  <Currency quantity={total} currency="CAD" />
+                  <Currency quantity={getTotal()} currency="CAD" />
                 </span>
               </h2>
               <button

@@ -1,6 +1,7 @@
 import React from "react";
 import moment from "moment";
 import Currency from "react-currency-formatter";
+
 type Props = {
   id: string;
   amount: number;
@@ -18,7 +19,6 @@ function Order({
   timestamp,
   images,
 }: Props) {
-  console.log(items.data.length);
   return (
     <div className="relative border rounded-md ">
       <div className="flex items-center space-x-10 p-5 bg-gray-100 text-sm text-gray-600 ">
@@ -42,8 +42,9 @@ function Order({
       </div>
       <div className="p-5 sm:p-10 ">
         <div className="flex space-x-6 overflow-x-auto">
-          {images.map((image) => (
+          {images.map((image, i) => (
             <img
+              key={i}
               src={image}
               alt="Order Image"
               className="h-20 object-contain sm:h-32"

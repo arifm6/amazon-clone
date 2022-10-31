@@ -2,7 +2,6 @@ import Image from "next/image";
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
-import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
 type Props = any;
 
@@ -16,8 +15,6 @@ export default function CheckoutProduct({
   image,
   hasPrime,
 }: Props) {
-  const dispatch = useDispatch();
-
   const addItemToCart = () => {
     const product = {
       id: id,
@@ -29,10 +26,9 @@ export default function CheckoutProduct({
       rating: rating,
       hasPrime: hasPrime,
     };
-    dispatch(addToCart(product));
   };
   const removeItemFromCart = () => {
-    dispatch(removeFromCart(id));
+    //dispatch(removeFromCart(id));
   };
   return (
     <div className="grid grid-cols-5">
