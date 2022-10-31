@@ -121,7 +121,9 @@ function Checkout({}: Props) {
               </h2>
               <button
                 role="link"
-                onClick={createThenEmpty}
+                onClick={() => {
+                  createThenEmpty();
+                }}
                 disabled={!session}
                 className={`button mt-2 ${
                   !session &&
