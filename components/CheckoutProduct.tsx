@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
@@ -7,18 +7,26 @@ import { useSession } from "next-auth/react";
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import db from "../firebase";
 import axios from "axios";
+import { CartContext } from "../pages/_app";
+import { useEffect } from "react";
 type Props = any;
+console.log();
+export default function CheckoutProduct({ id, rating, hasPrime }: Props) {
+  const { cart, setCart }: any = useContext(CartContext as any);
+  function getCartItem() {
+    for (let i = 0; i < cart.length; i++) {
+      if (cart[i].id === id) {
+        return cart[i];
+      }
+    }
+    return null;
+  }
+  const [cartItem, setCartItem] = useState(getCartItem());
 
-export default function CheckoutProduct({
-  id,
-  title,
-  rating,
-  price,
-  description,
-  category,
-  image,
-  hasPrime,
-}: Props) {
+  useEffect(() => {
+    setCartItem(getCartItem());
+  }, [cart]);
+
   const { data: session } = useSession();
   // call backend to add item to cart
 
@@ -26,43 +34,58 @@ export default function CheckoutProduct({
     //now call backend to create checkout session
     const addToCart = await axios.post("/api/add-item-to-cart", {
       id: id,
-      title: title,
-      price: price,
-      description: description,
-      category: category,
-      image: image,
+      title: cartItem.title,
+      price: cartItem.price,
+      description: cartItem.description,
+      category: cartItem.category,
+      image: cartItem.image,
       count: "add logic here",
       email: session?.user?.email,
     });
   };
 
+  function updateEmptyFromCart() {
+    removeItemFromCart();
+    //remove item from state
+
+    for (let i = 0; i < cart.length; i++) {
+      if (cart[i].id === id) {
+        setCart((prevCart: any) => {
+          prevCart.splice(i, 1);
+          return prevCart;
+        });
+      }
+    }
+  }
   const removeItemFromCart = async () => {
-    //now call backend to create checkout session
+    //now call backend to remove item from db
     const removeFromCartSession = await axios.post(
       "/api/remove-item-from-cart",
       {
         id: id,
-        title: title,
-        price: price,
-        description: description,
-        category: category,
-        image: image,
+        title: cartItem.title,
+        price: cartItem.price,
+        description: cartItem.description,
+        category: cartItem.category,
+        image: cartItem.image,
         count: "add logic here",
         email: session?.user?.email,
       }
     );
+    removeFromCartSession;
   };
-  return (
+
+  return cartItem ? (
     <div className="grid grid-cols-5">
       <Image
-        src={image}
+        src={cartItem.image}
         width={200}
         height={200}
-        alt={description}
+        alt={cartItem.description}
         className="object-contain"
       />
       <div className="col-span-3 mx-5">
-        <p>{title}</p>
+        <p>{cartItem.title}</p>
         <div className="flex">
           {Array(rating)
             .fill("_")
@@ -70,8 +93,8 @@ export default function CheckoutProduct({
               return <FaStar key={i} className="w-5 h-5 text-yellow-500" />;
             })}
         </div>
-        <p className="text-xs my-2 line-clamp-3">{description}</p>
-        <Currency quantity={price} currency="CAD" />
+        <p className="text-xs my-2 line-clamp-3">{cartItem.description}</p>
+        <Currency quantity={cartItem.price} currency="CAD" />
         {hasPrime && (
           <div className="flex items-center space-x-2">
             <img
@@ -93,10 +116,17 @@ export default function CheckoutProduct({
         >
           Add To Cart
         </button>
-        <button className="button" onClick={removeItemFromCart}>
+        <button
+          className="button"
+          onClick={() => {
+            updateEmptyFromCart();
+          }}
+        >
           Remove From Cart
         </button>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }

@@ -32,6 +32,9 @@ function Product({ id, title, price, description, category, image }: Props) {
 
   function updateCart() {
     addItemToCart();
+    if (!session) {
+      return;
+    }
 
     setCart((prevCart: any) => {
       //hacky way of checking for duplicates... would not reccommend in the future. would use initial object DS instead

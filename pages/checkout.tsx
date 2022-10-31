@@ -8,19 +8,29 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import moment from "moment";
 import { CartContext } from "./_app";
+import { useEffect } from "react";
 const stripePromise = loadStripe(process.env.stripe_public_key as string);
 type Props = {};
 
 function Checkout({}: Props) {
   const { cart, setCart }: any = useContext(CartContext as any);
 
-  const getTotal = () => {
+  let getTotal = () => {
     return cart
       .map((cartItem: any) => cartItem.price)
       .reduce((accumulator: any, value: any) => {
         return accumulator + value;
       }, 0);
   };
+  useEffect(() => {
+    getTotal = () => {
+      return cart
+        .map((cartItem: any) => cartItem.price)
+        .reduce((accumulator: any, value: any) => {
+          return accumulator + value;
+        }, 0);
+    };
+  }, [cart]);
   const { data: session } = useSession();
   function createThenEmpty() {
     createCheckoutSession();
@@ -78,7 +88,9 @@ function Checkout({}: Props) {
             <h1 className="text-3xl border-b pb-4">
               {cart && cart.length === 0
                 ? "Your Amazon Cart is Empty."
-                : "Your Shopping Cart"}
+                : session
+                ? "Your Shopping Cart"
+                : "Please Sign In To View Your Shopping Cart"}
             </h1>
 
             {cart &&
@@ -86,25 +98,10 @@ function Checkout({}: Props) {
                 (
                   cartItem: {
                     id: any;
-                    title: any;
-                    price: any;
-                    description: any;
-                    category: any;
-                    image: any;
                   },
                   i: any
                 ) => {
-                  return (
-                    <CheckoutProduct
-                      key={i}
-                      id={cartItem.id}
-                      title={cartItem.title}
-                      price={cartItem.price}
-                      description={cartItem.description}
-                      category={cartItem.category}
-                      image={cartItem.image}
-                    />
-                  );
+                  return <CheckoutProduct key={i} id={cartItem.id} />;
                 }
               )}
           </div>
