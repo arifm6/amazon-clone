@@ -8,12 +8,17 @@ import { useState, createContext, useContext } from "react";
 export const CartContext = createContext([]);
 
 type AppOwnProps = {
-  cart: any;
+  cartProp: any;
 };
-function MyCustomApp({ Component, pageProps, cart }: AppProps & AppOwnProps) {
+function MyCustomApp({
+  Component,
+  pageProps,
+  cartProp,
+}: AppProps & AppOwnProps) {
+  const [cart, setCart]: any = useState(cartProp);
   return (
     <SessionProvider session={pageProps.session}>
-      <CartContext.Provider value={cart}>
+      <CartContext.Provider value={{ cart, setCart } as any}>
         <Component {...pageProps} />
       </CartContext.Provider>
     </SessionProvider>
@@ -35,7 +40,7 @@ MyCustomApp.getInitialProps = async (
   const databaseCart = await getDocs(
     collection(db, "users", session?.user?.email as string, "cart")
   );
-  const cart = await Promise.all(
+  const cartProp = await Promise.all(
     databaseCart.docs.map(async (cartItem) => ({
       id: cartItem.id,
       title: cartItem.data().title,
@@ -45,5 +50,5 @@ MyCustomApp.getInitialProps = async (
       image: cartItem.data().image,
     }))
   );
-  return { ...ctx, cart: cart };
+  return { ...ctx, cartProp: cartProp };
 };

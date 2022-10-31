@@ -1,5 +1,5 @@
 import { getSession } from "next-auth/react";
-import React from "react";
+import React, { useContext } from "react";
 import {
   collection,
   orderBy,
@@ -12,11 +12,14 @@ import {
 } from "firebase/firestore";
 import db from "../firebase";
 import { json } from "micro";
+import { CartContext } from "./_app";
 type Props = {
   cart: any;
 };
 
-function testpage({ cart }: Props) {
+function testpage({}: Props) {
+  const { cart, setCart }: any = useContext(CartContext as any);
+  console.log(cart);
   return <div>HELLO</div>;
 }
 

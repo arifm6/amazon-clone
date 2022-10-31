@@ -12,7 +12,8 @@ const stripePromise = loadStripe(process.env.stripe_public_key as string);
 type Props = {};
 
 function Checkout({}: Props) {
-  const cart: any = useContext(CartContext as any);
+  const { cart, setCart }: any = useContext(CartContext as any);
+
   const getTotal = () => {
     return cart
       .map((cartItem: any) => cartItem.price)
@@ -79,6 +80,7 @@ function Checkout({}: Props) {
                 ? "Your Amazon Cart is Empty."
                 : "Your Shopping Cart"}
             </h1>
+
             {cart &&
               cart.map(
                 (
