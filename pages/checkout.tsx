@@ -21,7 +21,28 @@ function Checkout({}: Props) {
       }, 0);
   };
   const { data: session } = useSession();
-
+  function createThenEmpty() {
+    createCheckoutSession();
+    emptyCart();
+    console.log("created session then emptied cart");
+  }
+  const emptyCart = async () => {
+    cart.forEach(async (item: any) => {
+      const removeFromCartSession = await axios.post(
+        "/api/remove-item-from-cart",
+        {
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          description: item.description,
+          category: item.category,
+          image: item.image,
+          email: session?.user?.email,
+        }
+      );
+      removeFromCartSession;
+    });
+  };
   const createCheckoutSession = async () => {
     const stripe = await stripePromise;
 
@@ -98,7 +119,7 @@ function Checkout({}: Props) {
               </h2>
               <button
                 role="link"
-                onClick={createCheckoutSession}
+                onClick={createThenEmpty}
                 disabled={!session}
                 className={`button mt-2 ${
                   !session &&
