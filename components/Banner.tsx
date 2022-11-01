@@ -16,13 +16,13 @@ function Banner({}: Props) {
         interval={5000}
       >
         <div className="bg-gray-100 ">
-          <img src="/banner_1.jpg" alt="banner 1" loading="lazy" />
+          <img src="/banner_1.png" alt="banner 1" loading="lazy" />
         </div>
         <div>
-          <img src="/banner_2.png" alt="banner 2" loading="lazy" />
+          <img src="/banner_2.jpeg" alt="banner 2" loading="lazy" />
         </div>
         <div>
-          <img src="/banner_3.jpg" alt="banner 3" loading="lazy" />
+          <img src="/banner_3.jpeg" alt="banner 3" loading="lazy" />
         </div>
       </Carousel>
     </div>
