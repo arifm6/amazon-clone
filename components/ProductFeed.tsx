@@ -23,7 +23,7 @@ function ProductFeed({ products }: Props) {
           );
         })}
       <img
-        src="/product_banner.jpg"
+        src="/sale_banner.webp"
         alt="Product Banner"
         className="md:col-span-full"
       />

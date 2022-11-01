@@ -11,7 +11,7 @@ const Home: NextPage<{ products: any }> = ({ products }) => {
     <div>
       <Head>
         <title>Amazon Clone</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/amazon_favicon.ico" />
       </Head>
       <Header />
       <main className="max-w-screen-2xl mx-auto bg-gray-100">
