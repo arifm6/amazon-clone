@@ -4,7 +4,14 @@ import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
-import { doc, setDoc, increment, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  increment,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+} from "firebase/firestore";
 import db from "../firebase";
 import { useSession } from "next-auth/react";
 
@@ -71,7 +78,47 @@ export default function CheckoutProduct({
 
     dispatch(addToCart(product));
   };
-  const removeItemFromCart = () => {
+  const removeItemFromCart = async () => {
+    if (session) {
+      try {
+        await updateDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`),
+          {
+            id: id,
+
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image,
+            rating: rating,
+            hasPrime: hasPrime,
+            count: increment(-1),
+          }
+        );
+        if (
+          (await (
+            await getDoc(
+              doc(
+                db,
+                "users",
+                session?.user?.email as string,
+                "cart",
+                `id_${id}`
+              )
+            )
+          ).data()?.count) === 0
+        ) {
+          await deleteDoc(
+            doc(db, "users", session?.user?.email as string, "cart", `id_${id}`)
+          );
+        }
+      } catch {
+        await deleteDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`)
+        );
+      }
+    }
     dispatch(removeFromCart(id));
   };
   return (
