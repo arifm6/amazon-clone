@@ -21,7 +21,6 @@ export const cartSlice = createSlice({
       const index = state.items.findIndex((cartItem) => {
         return cartItem.id === action.payload;
       });
-      console.log(index);
       let newCart = [...state.items];
       if (index >= 0) {
         newCart.splice(index, 1);
@@ -35,7 +34,7 @@ export const cartSlice = createSlice({
     setCart: (state, action: PayloadAction<any>) => {
       let payloadAlias: any[] = [];
       action.payload.forEach((element: any) => {
-        for (let i = 0; i < element.count; i++) {
+        for (let i = 0; i < element?.count; i++) {
           payloadAlias = [...payloadAlias, { ...element, count: 1 }];
         }
       });

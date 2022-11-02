@@ -79,7 +79,6 @@ export default async (req, res) => {
       //fullfil order AKA put it inside database.
       return fulfillOrder(session)
         .then(() => {
-          console.log("hiiii");
           return res.status(200);
         })
         .catch((err) => {

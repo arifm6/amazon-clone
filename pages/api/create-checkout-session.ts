@@ -1,3 +1,6 @@
+import { collection, deleteDoc, getDocs } from "firebase/firestore";
+import db from "../../firebase";
+
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export default async (req: any, res: any) => {
@@ -16,6 +19,7 @@ export default async (req: any, res: any) => {
       },
     })
   );
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     shipping_options: [
@@ -34,5 +38,12 @@ export default async (req: any, res: any) => {
       images: JSON.stringify(items.map((item: { image: any }) => item.image)),
     },
   });
+
   res.status(200).json({ id: session.id });
+  const cartSnapshot = await getDocs(
+    collection(db, "users", email as string, "cart")
+  );
+  cartSnapshot.forEach((doc) => {
+    deleteDoc(doc.ref);
+  });
 };
