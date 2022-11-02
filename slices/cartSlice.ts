@@ -32,10 +32,19 @@ export const cartSlice = createSlice({
       }
       state.items = newCart;
     },
+    setCart: (state, action: PayloadAction<any>) => {
+      let payloadAlias: any[] = [];
+      action.payload.forEach((element: any) => {
+        for (let i = 0; i < element.count; i++) {
+          payloadAlias = [...payloadAlias, { ...element, count: 1 }];
+        }
+      });
+      state.items = [...payloadAlias];
+    },
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, setCart } = cartSlice.actions;
 
 // Selectors - This is how we pull information from the Global store slice
 export const selectItems = (state: RootState) => state.cart.items;

@@ -11,13 +11,23 @@ import {
 } from "firebase/firestore";
 import moment from "moment";
 import Order from "../components/Order";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { setCart } from "../slices/cartSlice";
 type Props = {
   orders: any;
+  cart: any;
+  session: any;
 };
 
-function Orders({ orders }: Props) {
-  console.log(orders);
-  const { data: session, status } = useSession();
+function Orders({ orders, cart, session }: Props) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (session) {
+      dispatch(setCart(cart));
+    }
+  }, []);
+
   return (
     <div>
       <Header />
@@ -56,10 +66,24 @@ export async function getServerSideProps(context: any) {
 
   const session = await getSession(context);
   if (!session) {
+    console.log("SESSION NOT FOUND");
+
     return {
       props: {},
     };
   }
+  const cartSnapshot = await getDocs(
+    collection(db, "users", session?.user?.email as string, "cart")
+  );
+  let cartAlias: any[] = [];
+  cartSnapshot.forEach((doc) => {
+    cartAlias = [...cartAlias, doc.data()];
+  });
+
+  const cart = [...cartAlias];
+
+  // ...
+
   // firebase db
   const stripeOrders = await getDocs(
     query(
@@ -81,5 +105,5 @@ export async function getServerSideProps(context: any) {
     }))
   );
 
-  return { props: { orders } };
+  return { props: { orders, cart, session } };
 }

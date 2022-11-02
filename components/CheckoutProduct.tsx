@@ -4,6 +4,10 @@ import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
+import { doc, setDoc, increment, updateDoc } from "firebase/firestore";
+import db from "../firebase";
+import { useSession } from "next-auth/react";
+
 type Props = any;
 
 export default function CheckoutProduct({
@@ -16,9 +20,9 @@ export default function CheckoutProduct({
   image,
   hasPrime,
 }: Props) {
+  const { data: session } = useSession();
   const dispatch = useDispatch();
-
-  const addItemToCart = () => {
+  const addItemToCart = async () => {
     const product = {
       id: id,
       title: title,
@@ -29,6 +33,42 @@ export default function CheckoutProduct({
       rating: rating,
       hasPrime: hasPrime,
     };
+    if (session) {
+      try {
+        await updateDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`),
+          {
+            id: id,
+
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image,
+            rating: rating,
+            hasPrime: hasPrime,
+            count: increment(1),
+          }
+        );
+      } catch {
+        await setDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`),
+          {
+            id: id,
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image,
+            rating: rating,
+            hasPrime: hasPrime,
+
+            count: increment(1),
+          }
+        );
+      }
+    }
+
     dispatch(addToCart(product));
   };
   const removeItemFromCart = () => {

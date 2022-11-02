@@ -18,7 +18,6 @@ function Order({
   timestamp,
   images,
 }: Props) {
-  console.log(items.data.length);
   return (
     <div className="relative border rounded-md ">
       <div className="flex items-center space-x-10 p-5 bg-gray-100 text-sm text-gray-600 ">

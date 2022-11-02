@@ -4,6 +4,9 @@ import { FaStar } from "react-icons/fa";
 import Currency from "react-currency-formatter";
 import { useDispatch } from "react-redux";
 import { addToCart, selectItems } from "../slices/cartSlice";
+import { doc, setDoc, increment, updateDoc } from "firebase/firestore";
+import db from "../firebase";
+import { useSession } from "next-auth/react";
 type Props = {
   title: string;
   price: number;
@@ -17,12 +20,14 @@ function Product({ id, title, price, description, category, image }: Props) {
   //require setters and use effect because we are doing SSR. With SSR, math.random will generate different values for the server vs client.
   const [rating, setRating] = useState(3);
   const [hasPrime, setHasPrime] = useState(false);
+  const { data: session } = useSession();
+
   useEffect(() => {
     setRating(Math.floor(Math.random() * 5) + 1);
     setHasPrime(Math.random() < 0.5);
   }, []);
   const dispatch = useDispatch();
-  const addItemToCart = () => {
+  const addItemToCart = async () => {
     const product = {
       id: id,
       title: title,
@@ -33,6 +38,41 @@ function Product({ id, title, price, description, category, image }: Props) {
       rating: rating,
       hasPrime: hasPrime,
     };
+    if (session) {
+      try {
+        await updateDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`),
+          {
+            id: id,
+
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image,
+            rating: rating,
+            hasPrime: hasPrime,
+            count: increment(1),
+          }
+        );
+      } catch {
+        await setDoc(
+          doc(db, "users", session?.user?.email as string, "cart", `id_${id}`),
+          {
+            id: id,
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image,
+            rating: rating,
+            hasPrime: hasPrime,
+
+            count: increment(1),
+          }
+        );
+      }
+    }
 
     dispatch(addToCart(product));
   };

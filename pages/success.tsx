@@ -1,10 +1,27 @@
+import { collection, getDocs } from "firebase/firestore";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
+import { useDispatch } from "react-redux";
 
 import Header from "../components/Header";
-type Props = {};
+import db from "../firebase";
+import { setCart } from "../slices/cartSlice";
+type Props = {
+  cart: any;
+  session: any;
+};
 
-function success({}: Props) {
+function success({ session, cart }: Props) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (session) {
+      dispatch(setCart(cart));
+    }
+  }, []);
+
   const router = useRouter();
   return (
     <div className="bg-gray-100 h-screen">
@@ -32,5 +49,27 @@ function success({}: Props) {
     </div>
   );
 }
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session) {
+    console.log("SESSION NOT FOUND");
+    return { props: {} };
+  }
+
+  const cartSnapshot = await getDocs(
+    collection(db, "users", session?.user?.email as string, "cart")
+  );
+  let cartAlias: any[] = [];
+  cartSnapshot.forEach((doc) => {
+    cartAlias = [...cartAlias, doc.data()];
+  });
+
+  const cart = [...cartAlias];
+
+  return {
+    props: { session, cart },
+  };
+  // ...
+};
 
 export default success;

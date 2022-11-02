@@ -1,3 +1,3 @@
-Things to add: change images and possibly apis. possibly persist cart on refresh. random star on cart page?
+# PROJECT PLAN
 
-# NEW PLAN! WE NEED TO ORGANIZE EVERY SINGLE THING SO THAT WE HAVE GOOD DESIGN PRINCIPLES
+I will keep redux. I will start by trying to persist data based on user. My method is to retrieve database info about logged in cart info for logged in users. Otherwise, use redux normally. NOTE that we have to be mindful of whenever we are logging in with items in the cart already. Possible options are to clear cart and use database cart, overwrite db cart with local cart, combined. I want to add a dropdown on the checkout page for the quantity of the same item. Must consider how to implement this along with add on main page. For now, I think I will not allow multiple adds on the home page. REMEMBER, the redux state uses an array of objects whereas the database uses document collection pairs. You must find a way to identify each DB object. If you are allowing multiple adds on the homepage, then db based on ID will not work. If you are not allowing multiple adds on homepage, then it will.

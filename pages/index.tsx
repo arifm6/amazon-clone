@@ -6,7 +6,22 @@ import Header from "../components/Header";
 import Banner from "../components/Banner";
 import ProductFeed from "../components/ProductFeed";
 import Products from "../components/ProductFeed";
-const Home: NextPage<{ products: any }> = ({ products }) => {
+import { getSession, useSession } from "next-auth/react";
+import { collection, getDocs } from "firebase/firestore";
+import db from "../firebase";
+import { addToCart, setCart } from "../slices/cartSlice";
+import { useEffect } from "react";
+const Home: NextPage<{ products: any; cart: any; session: any }> = ({
+  products,
+  cart,
+  session,
+}) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (session) {
+      dispatch(setCart(cart));
+    }
+  }, []);
   return (
     <div>
       <Head>
@@ -27,7 +42,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const products = await fetch("https://fakestoreapi.com/products").then(
     (res) => res.json()
   );
-  return { props: { products } };
+  const session = await getSession(context);
+  if (!session) {
+    console.log("SESSION NOT FOUND");
+    return { props: { products } };
+  }
+
+  const cartSnapshot = await getDocs(
+    collection(db, "users", session?.user?.email as string, "cart")
+  );
+  let cartAlias: any[] = [];
+  cartSnapshot.forEach((doc) => {
+    cartAlias = [...cartAlias, doc.data()];
+  });
+
+  const cart = [...cartAlias];
+
+  return {
+    props: { products, cart, session },
+  };
   // ...
 };
 export default Home;

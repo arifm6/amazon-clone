@@ -1,20 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../components/Header";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { selectItems, selectTotal } from "../slices/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectItems, selectTotal, setCart } from "../slices/cartSlice";
 import CheckoutProduct from "../components/CheckoutProduct";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import Currency from "react-currency-formatter";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import { GetServerSideProps } from "next";
+import { collection, getDocs } from "firebase/firestore";
+import db from "../firebase";
 const stripePromise = loadStripe(process.env.stripe_public_key as string);
-type Props = {};
+type Props = {
+  session: any;
+  cart: any;
+};
 
-function Checkout({}: Props) {
+function Checkout({ session, cart }: Props) {
   const items = useSelector(selectItems);
   const total = useSelector(selectTotal);
-  const { data: session } = useSession();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (session) {
+      dispatch(setCart(cart));
+    }
+  }, []);
 
   const createCheckoutSession = async () => {
     const stripe = await stripePromise;
@@ -97,5 +108,26 @@ function Checkout({}: Props) {
     </div>
   );
 }
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+  if (!session) {
+    console.log("SESSION NOT FOUND");
+    return { props: {} };
+  }
 
+  const cartSnapshot = await getDocs(
+    collection(db, "users", session?.user?.email as string, "cart")
+  );
+  let cartAlias: any[] = [];
+  cartSnapshot.forEach((doc) => {
+    cartAlias = [...cartAlias, doc.data()];
+  });
+
+  const cart = [...cartAlias];
+
+  return {
+    props: { session, cart },
+  };
+  // ...
+};
 export default Checkout;
