@@ -3,7 +3,11 @@ import * as admin from "firebase-admin";
 const { getFirestore } = require("firebase-admin/firestore");
 
 //secure connection to firebase from our backend.
-const serviceAccount = require("../../permissions.json");
+const serviceAccount = {
+  ...require("../../permissions.json"),
+  private_key_id: process.env.private_key_id,
+  private_key: process.env.private_key,
+};
 
 const app = !admin.apps.length
   ? admin.initializeApp({
