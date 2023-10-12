@@ -5,8 +5,8 @@ const { getFirestore } = require("firebase-admin/firestore");
 //secure connection to firebase from our backend.
 const serviceAccount = {
   ...require("../../permissions.json"),
-  private_key_id: process.env.private_key_id,
-  private_key: process.env.private_key,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY,
 };
 
 const app = !admin.apps.length
