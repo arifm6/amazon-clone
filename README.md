@@ -1,3 +1,19 @@
-# PROJECT PLAN
+# Amazon Clone
 
-I will keep redux. I will start by trying to persist data based on user. My method is to retrieve database info about logged in cart info for logged in users. Otherwise, use redux normally. NOTE that we have to be mindful of whenever we are logging in with items in the cart already. Possible options are to clear cart and use database cart, overwrite db cart with local cart, combined. I want to add a dropdown on the checkout page for the quantity of the same item. Must consider how to implement this along with add on main page. For now, I think I will not allow multiple adds on the home page. REMEMBER, the redux state uses an array of objects whereas the database uses document collection pairs. You must find a way to identify each DB object. If you are allowing multiple adds on the homepage, then db based on ID will not work. If you are not allowing multiple adds on homepage, then it will.
+Welcome to my Amazon Clone. You can find a live demo at [https://amazon-clone-arifm6.vercel.app/](https://amazon-clone-arifm6.vercel.app/).
+
+## DISCLAIMER and Functional Features
+
+Some of the things you see on the page are not functional and are only their for presentation purposes. Here is an example: ![Non-functional features](/public/non-functional-links.png). All the links here do not work. I did not bother setting it up. Everything else works as intended. Additionally, I did not add user response on certain button clicks such as add to cart. However, you can tell they work by clicking add to cart and checking the number overlapping the cart icon on the right side of the navbar.
+
+### `Authentication`
+
+You can log in and out by clicking the ![Alt text](/public/sign-in-button.png) on the navbar. You can use the same button to sign out. Only Github and google login in supported. Logging in also saves your items to your account which persists between different devices.
+
+### `Checkout and Orders`
+
+Once you are logged in, you can check out items in your cart and "pay" for them. This redirects to a stripe session where you can use dummy information to simulate a real life payment platform. You can use 424242.... for credit card information and give any address/info. Once you have paid for your items, you can check your returns and orders page to see items you have purchased in the past.
+
+### `Bugs`
+
+There may be a few bugs that I have not bothered to fix but I am aware of them. There is a bug that prevents checkout when there are too many items in your cart. This is because the metadata character information on the total number of items exceeds the allowed number of characters. This is a simple fix but I have retired this project. There are various other minor bugs in the same boat.
