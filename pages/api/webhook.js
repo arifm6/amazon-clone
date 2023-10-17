@@ -32,7 +32,8 @@ const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
 const fulfillOrder = async (session) => {
   //console.log("fulfilling order", session);
-  return db
+
+  const output = db
     .collection("users")
     .doc(session.metadata.email)
     .collection("orders")
@@ -46,6 +47,18 @@ const fulfillOrder = async (session) => {
     .then(() =>
       console.log(`SUCCESS: Order ${session.id} has been added to the database`)
     );
+  await db
+    .collection("users")
+    .doc(session.metadata.email)
+    .collection("cart")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // Delete each cart item
+        doc.ref.delete();
+      });
+    });
+  return output;
   /*
   return 
    reference:
